@@ -1,0 +1,10 @@
+[Unit]
+Description=code_record: fetch Bitcoin confirmations a few hours after each run
+
+[Timer]
+OnCalendar=*-*-* 08:00:00
+RandomizedDelaySec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,10 @@
+[Unit]
+Description=Complete OpenTimestamps proofs for code_record
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/git/code_record/check_stamps.sh
+# Exit 1 just means something is still pending; don't mark the unit failed.
+SuccessExitStatus=1

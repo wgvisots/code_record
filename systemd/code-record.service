@@ -1,0 +1,9 @@
+[Unit]
+Description=Record and timestamp GitHub repository tips (code_record)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=%h/git/code_record/recorder.sh
+Nice=10
