@@ -174,9 +174,17 @@ journalctl --user -u code-record.service         # output of past runs
 ```
 
 `code-record.timer` runs `recorder.sh` daily, and `code-record-check.timer`
-runs `check_stamps.sh` each morning to complete the Bitcoin proof. Both catch up
-after the machine was off. They need the SSH key (for fetching and commit
-signing) and `gh`'s login to work without a prompt.
+runs `check_stamps.sh` each morning to complete the Bitcoin proof.
+
+- **Missed runs are not skipped.** If the computer was off or asleep at the
+  scheduled time, the run happens soon after you next log in or wake it (it
+  may wait up to an hour, because of the timers' random delay). User timers only
+  run while you're logged in, which is also when `gh`'s keyring login is
+  available.
+- **Failed runs are retried** every 15 minutes, up to 8 times, so a catch-up
+  run that starts before the network is up still gets done.
+- They need the SSH key (for fetching and commit signing) and `gh`'s login to
+  work without a prompt.
 
 ## Files
 

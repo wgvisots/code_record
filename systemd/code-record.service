@@ -2,8 +2,14 @@
 Description=Record and timestamp GitHub repository tips (code_record)
 Wants=network-online.target
 After=network-online.target
+# A catch-up run right after login or resume may start before the network is
+# up; retry every 15 minutes, at most 8 times in 3 hours, then wait for the next day.
+StartLimitIntervalSec=3h
+StartLimitBurst=8
 
 [Service]
 Type=oneshot
 ExecStart=%h/git/code_record/recorder.sh
 Nice=10
+Restart=on-failure
+RestartSec=15min
