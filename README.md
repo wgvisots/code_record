@@ -140,6 +140,28 @@ A notice can be as short as a `COPYRIGHT` file with
 `Copyright (c) 2026 Your Name. All rights reserved.`, or a LICENSE whose
 copyright line names you.
 
+### Adding headers
+
+`add_headers.py ROOT YEARS LICENSE FILE...` puts a copyright header at the top
+of each FILE (paths relative to ROOT), in the same style as astro's: a banner
+with the file's name (or its path, if the name appears more than once), the
+copyright line, then the license notice. `LICENSE` is `apache` (Apache 2.0
+notice) or `reserved` ("All rights reserved."). For example, in a repo:
+
+```sh
+git ls-files | grep -E '(\.(h|hpp|c|cpp|kt|kts|java|gradle|sh|py)|(^|/)CMakeLists\.txt)$' \
+  | xargs ~/git/code_record/add_headers.py . 2026 apache
+```
+
+- C, C++, Kotlin, Java, Gradle and similar files get a `/* ... */` block;
+  shell, Python, CMake and YAML files get `#` lines; Lua gets `--` lines.
+  Other types are skipped.
+- A `#!` line stays first. Files with Windows line endings are skipped.
+- Files that already name the owner in a copyright line near the top are
+  skipped, so it is safe to run again.
+- Check first for code copied from someone else: that needs a header crediting
+  its author, not a plain copyright claim (see `init.lua` in nvim_config).
+
 ## Running it daily
 
 ```sh
@@ -166,6 +188,7 @@ signing) and `gh`'s login to work without a prompt.
 | `cacert.pem`, `tsa.crt` | FreeTSA certificates, needed to verify `.tsr` files |
 | `*.sha256` | Pinned fingerprints of those certificates; the scripts stop if they change |
 | `coderec.py` | Fetching, recording, proving and the copyright check (standard library only) |
+| `add_headers.py` | Adds copyright headers to source files (see "Adding headers") |
 | `common.sh`, `ots_mini.py` | Shared with the photo record (see its README) |
 | `systemd/` | User timer units |
 | `mirrors/` | Local only: a bare mirror of every repo. Recorded tips are pinned under `refs/recorded/` and never pruned, so they stay provable after a force-push or a deleted branch. Also a backup. |
