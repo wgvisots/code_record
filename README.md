@@ -66,7 +66,7 @@ since the last run, or it was never pushed to GitHub.
 | `recorder.sh` | Fetch every repo, append new tips, timestamp the list, commit and push. Stops without stamping if any repo can't be fetched. |
 | `check_stamps.sh` | Check the current FreeTSA reply, fetch and verify the Bitcoin proof (committing and pushing it once complete), and confirm everything is on GitHub. Exits 0 only when all three are good. |
 | `prove.sh REPO [COMMIT...]` | For each commit (default: the default branch): the earliest recorded tip containing it, a re-check of that tip's tree digest, and the earliest FreeTSA and Bitcoin proofs covering it, with GitHub links. |
-| `copyright_check.sh` | For each repo's default branch, look for a copyright line (the word *copyright*, *©* or *(c)* plus a year) in top-level `LICENSE`, `COPYING`, `COPYRIGHT`, `NOTICE`, `README` or `AUTHORS` files. See below. |
+| `copyright_check.sh` | For each repo's default branch, look for a copyright line (the word *copyright*, *©* or *(c)* plus a year): first in top-level `LICENSE`, `COPYING`, `COPYRIGHT`, `NOTICE`, `README` or `AUTHORS` files, then in file headers anywhere. See below. |
 | `coderec.py digest GITDIR COMMIT` | Print a commit's SHA-256 tree digest. |
 | `coderec.py label [--reveal] REPO` | Print the label a repo has in `refs.txt`; `--reveal` adds its salt, to disclose that one label. |
 
@@ -125,10 +125,10 @@ Anyone can check a commit with standard tools:
 
 | Status | Meaning |
 |---|---|
-| `OK` | A copyright line names you (`git config user.name`, or `wgvisots`). |
+| `OK` | A copyright line names you (`git config user.name`, or `wgvisots`), in a top-level notice file or in the header of any text file. |
 | `UPSTREAM` | A fork whose only notice names someone else (normal for a fork; add your own for your changes). |
 | `OTHER` | Not a fork, but the only notice names someone else. |
-| `MISSING` | No copyright line found. |
+| `MISSING` | No copyright line found anywhere. |
 | `EMPTY` | The repo has no commits. |
 
 It exits 1 if any repo is `MISSING` (or couldn't be checked). With `--strict`

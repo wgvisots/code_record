@@ -503,6 +503,21 @@ def notices(gd, commit):
     return found
 
 
+def header_notices(gd, commit, owner_re):
+    """{path: line} for files anywhere in the tree whose copyright line names an owner."""
+    p = git(gd, "grep", "-z", "-I", "-i", "-E", "-e",
+            r"(copyright|©|\(c\)).*(19|20)[0-9]{2}", commit, check=False)
+    files = {}
+    for rec in p.stdout.decode(errors="replace").split("\n"):
+        if "\0" not in rec:
+            continue
+        path, line = rec.split("\0", 1)
+        path = path[len(commit) + 1:]
+        if owner_re.search(line) and "Free Software Foundation" not in line:
+            files.setdefault(path, line.strip())
+    return files
+
+
 def cmd_copyright(args):
     strict = "--strict" in args
     fetch = "--no-fetch" not in args
@@ -527,18 +542,22 @@ def cmd_copyright(args):
                 if not tip:
                     raise Fail("default branch %s not in mirror" % branch)
                 found = notices(gd, tip)
+                yours = [f for f in found if owner_re.search(f[1])]
+                headers = {} if yours else header_notices(gd, tip, owner_re)
             except Fail as e:
                 status, detail = "ERROR", str(e)
             else:
-                yours = [f for f in found if owner_re.search(f[1])]
                 if yours:
                     status, f = "OK", yours[0]
+                elif headers:
+                    path = sorted(headers)[0]
+                    status, f = "OK", ("%d file header(s), e.g. %s" % (len(headers), path), headers[path])
                 elif found:
                     status, f = ("UPSTREAM" if repo["isFork"] else "OTHER"), found[0]
                 else:
                     status, f = "MISSING", None
                 detail = "%s: %s" % (f[0], f[1][:70]) if f else \
-                    "no copyright line in a LICENSE/COPYING/COPYRIGHT/NOTICE/README file"
+                    "no copyright line in a top-level notice file or in any file header"
         counts[status] = counts.get(status, 0) + 1
         print("%-9s %-36s %s" % (status, tag, detail))
 
