@@ -260,7 +260,8 @@ def cmd_collect(args):
             for sha in fresh:
                 new_rows.append((gd, sha, "%s  %s  %s  %s" % (
                     sha, tree_digest(gd, sha), label, verified_at(name, sha))))
-            log("%-28s %d new tip(s)" % (name if repo["visibility"] == "PUBLIC" else label, len(fresh)))
+            if fresh:
+                log("%-34s %d new tip(s)" % (name if repo["visibility"] == "PUBLIC" else label, len(fresh)))
         except Fail as e:
             failed.append(name)
             log("ERROR %s: %s" % (name, e))
